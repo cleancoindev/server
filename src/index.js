@@ -1,6 +1,6 @@
-const { GraphQLServer } = require('graphql-yoga')
-var admin = require("firebase-admin");
-const { ApolloError, ValidationError } = require( 'apollo-server');
+const { GraphQLServer } = require('graphql-yoga');
+var admin = require('firebase-admin');
+const { ApolloError, ValidationError } = require('apollo-server');
 
 const serviceAccount = require('../secrets/serviceAccountKey.json');
 
@@ -29,30 +29,31 @@ type Country {
   currentPrice: Int!
   lastPrice: Int
   profitEarned: Int
-  lastBought: Int
   owner: User!
+  onSale: Boolean!
+  lastBought: Float
 }
 
 type Query {
   user(id: String!): User
   countries: [Country]
 }
+type Mutation {
+  buyCountry (id: String!, newOwnerId: String!, price: Int!, gift: Boolean!, timeOfPurchase: Float!) : Country!
+  giftCountry (id: String!, newOwnerId: String!, gift: Boolean!, timeOfGifting: Float!) : Country!
+}
 `;
 
 const resolvers = {
-  // Query: {
-  //   info: () => `This is the API of a Hackernews Clone`
-  // }
   User: {
     async countries(user) {
       try {
         const userCountries = await admin
           .firestore()
           .collection('countries')
-          .where('userId', '==', 
-          user.userId)
+          .where('owner', '==', user.userId)
           .get();
-        
+
         return userCountries.docs.map(country => country.data());
       } catch (error) {
         throw new ApolloError(error);
@@ -86,9 +87,43 @@ const resolvers = {
           .firestore()
           .doc(`users/${args.id}`)
           .get();
-        const user = {...userDoc.data(), userId: userDoc.id}
-     
+        const user = { ...userDoc.data(), userId: userDoc.id };
+
         return user || new ValidationError('User ID not found!');
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    }
+  },
+  Mutation: {
+    buyCountry: async (_, args) => {
+      try {
+        const countryRef = await admin.firestore().doc(`countries/${args.id}`);
+        await countryRef.update({
+          owner: args.newOwnerId,
+          onSale: false,
+          lastPrice: args.price,
+          gift: args.gift,
+          lastBought: args.timeOfPurchase
+        });
+        const countryDoc = await countryRef.get();
+        return countryDoc.data();
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
+
+    giftCountry: async (_, args) => {
+      try {
+        const countryRef = await admin.firestore().doc(`countries/${args.id}`);
+        await countryRef.update({
+          id: args.id,
+          owner: args.newOwnerId,
+          gift: args.gift,
+          timeOfGifting: args.timeOfGifting
+        });
+        const countryDoc = await countryRef.get();
+        return countryDoc.data();
       } catch (error) {
         throw new ApolloError(error);
       }
