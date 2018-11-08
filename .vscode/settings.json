@@ -1,0 +1,7 @@
+"workbench.colorCustomizations": {
+    "Server": {
+        "titleBar.activeBackground": "#f35e83",
+        "titleBar.activeForeground":"#f35e83",
+    },
+},
+"window.titleBarStyle": "custom"
