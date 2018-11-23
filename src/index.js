@@ -7,8 +7,10 @@ const serviceAccount = require('../secrets/serviceAccountKey.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://dev-cryptominerworld.firebaseio.com'
+  databaseURL: 'https://dev-cryptominerworld.firebaseio.com/'
 });
+  
+admin.firestore().settings( { timestampsInSnapshots: true })
 
 const server = new GraphQLServer({
   typeDefs,

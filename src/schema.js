@@ -1,6 +1,23 @@
 'use strict';
 
 const typeDefs = `
+
+type MapCountry {
+  id: ID!
+  countryId: Int!
+  plots: Int!
+  price: Float!
+  roi: Float!
+  east: Float!
+  north: Float!
+  name: String!
+  mapIndex: Int!
+  imageLinkLarge: String!
+  imageLinkMedium: String!
+  imageLinkSmall: String!
+  sold: Boolean!
+}
+
 type User {
   id: ID!
   imageURL: String!
@@ -12,32 +29,50 @@ type User {
 
 type Country {
   id: ID!
-  totalPlots: Int
-  plotsBought: Int
-  plotsMined: Int
-  plotsAvailable: Int
-  name: String
-  currentPrice: Int
-  lastPrice: Int
-  profitEarned: Int
   owner: User!
-  onSale: Boolean
-  lastBought: Float
-  countryId: Int
-  mapIndex: Int
-  description: String
-  image: String
-  roi: Int
+  imageLinkLarge: String!
+  imageLinkMedium: String!
+  imageLinkSmall: String!
+  countryId: Int!
+  mapIndex: Int!
+  name: String!
+  totalPlots: Int!
+  plotsBought: Int!
+  plotsMined: Int!
+  plotsAvailable: Int!
+  lastPrice: Float!
+  onSale: Boolean!
+  roi: Float!
+  lastBought: Float!
 }
 
 type Query {
   user(id: String!): User
   countries: [Country]
+  mapCountries: [MapCountry]
 }
 
 type Mutation {
-  buyCountry (id: String!, newOwnerId: String!, price: Int!, gift: Boolean!, timeOfPurchase: Float!, totalPlots: Int!) : Country!
-  giftCountry (id: String!, newOwnerId: String!, gift: Boolean!, timeOfGifting: Float!) : Country!
+  buyCountry (
+            id: String!,
+            newOwnerId: String!,
+            timeOfPurchase: Float!,
+            price: Float!,
+            totalPlots: Int!,
+            imageLinkLarge: String!,
+            imageLinkMedium: String!,
+            imageLinkSmall: String!,
+            countryId: Int!,
+            mapIndex: Int!,
+            roi: Float!,
+  ) : Country!
+
+          
+                   
+                   
+                    
+                    
+                      
 }
 `;
 

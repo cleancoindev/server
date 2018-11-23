@@ -32,6 +32,17 @@ const resolvers = {
     }
   },
   Query: {
+    async mapCountries() {
+      const mapCountries = await admin
+        .database()
+        .ref('worldMap/objects/units/geometries')
+        .once('value')
+        .then(snap => snap.val());
+      const countries = mapCountries
+        .map(country => country.properties)
+        .filter(country => country.countryId !== 200);
+      return countries;
+    },
     async countries() {
       const countries = await admin
         .firestore()
@@ -60,36 +71,25 @@ const resolvers = {
         const countryRef = await admin.firestore().doc(`countries/${args.id}`);
         await countryRef.set(
           {
+            id: args.id,
             owner: args.newOwnerId,
             onSale: false,
             lastPrice: args.price,
-            gift: args.gift,
             lastBought: args.timeOfPurchase,
             totalPlots: args.totalPlots,
             plotsBought: 0,
             plotsMined: 0,
             plotsAvailable: args.totalPlots,
             name: args.id,
-            currentPrice: args.price
+            imageLinkLarge: args.imageLinkLarge,
+            imageLinkMedium: args.imageLinkMedium,
+            imageLinkSmall: args.imageLinkSmall,
+            countryId: args.countryId,
+            mapIndex: args.mapIndex,
+            roi: args.roi
           },
           { merge: true }
         );
-        const countryDoc = await countryRef.get();
-        return countryDoc.data();
-      } catch (error) {
-        throw new ApolloError(error);
-      }
-    },
-
-    giftCountry: async (_, args) => {
-      try {
-        const countryRef = await admin.firestore().doc(`countries/${args.id}`);
-        await countryRef.update({
-          id: args.id,
-          owner: args.newOwnerId,
-          gift: args.gift,
-          timeOfGifting: args.timeOfGifting
-        });
         const countryDoc = await countryRef.get();
         return countryDoc.data();
       } catch (error) {
