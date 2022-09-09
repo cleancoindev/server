@@ -22,6 +22,6 @@
     "apollo-server": "^2.1.0",
     "firebase-admin": "^6.1.0",
     "graphql-yoga": "^1.16.7",
-    "web3": "^1.0.0-beta.36"
+    "web3": "^1.2.7"
   }
 }
